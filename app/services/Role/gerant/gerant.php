@@ -1,3 +1,12 @@
+<?php
+
+use App\core\config\Connection as ConfigConnection;
+use App\entities\User;
+
+require_once dirname(__DIR__, 4) . "\\vendor\\autoload.php";
+// require_once 
+ ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
