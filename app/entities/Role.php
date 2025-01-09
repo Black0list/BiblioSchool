@@ -16,35 +16,17 @@ Class Role {
         $this->connection = new Connection;
     }
 
-    public function addRole($id, $name)
+    public function initiateRole($id, $name)
     {
         $this->id = $id;
         $this->name = $name;
     }
 
     public function getProperty($propertyName){
-        return $this->$propertyName;
+            return $this->$propertyName;
     }
 
     public function setProperty($propertyName, $value){
         $this->$propertyName = $value;
-    }
-
-
-    public function getAllRoles() {
-        $query = "SELECT * FROM roles";
-        $result = $this->connection->prepare($query);
-        $result->execute();
-
-        return $result->fetchAll();
-    }
-
-    
-    public function getNumberOfRoles(){
-        $query = "SELECT COUNT(*) FROM roles";
-        $result  = $this->connection->prepare($query);
-        $result->execute();
-
-        return $result->fetchColumn();
     }
 }

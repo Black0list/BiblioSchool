@@ -2,20 +2,26 @@
 
 namespace App\entities;
 
-Class Categorie {
+use App\core\config\Connection;
+use App\core\config\Crud as ConfigCrud;
+
+Class Tag {
 
     private $id;
     private $name;
+    private $connection;
     private $books = [];
 
-    public function __construct($id, $name, $books)
+    public function __construct()
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->books = $books;
-        
+        $this->connection = new Connection;
     }
 
+    public function initiateTag($id, $name, $books){
+        $this->id = $id;
+        $this->name = $name;
+        $this->books[] = $books;
+    }
     public function getProperty($propertyName){
         return $this->$propertyName;
     }

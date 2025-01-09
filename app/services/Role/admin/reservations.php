@@ -16,7 +16,6 @@
                                 <tbody>
                                     <?php
                                     $roles = $role->getAllRoles();
-                                    // var_dump($roles);
 
                                     foreach ($roles as $row) {
                                         $role->addRole($row['id'], $row['name']);

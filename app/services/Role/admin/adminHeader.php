@@ -1,14 +1,14 @@
 <?php
 
 use App\core\config\Connection as ConfigConnection;
-use App\entities\Library;
+use App\core\config\Crud;
+use App\entities\Categorie;
 use App\entities\Role;
 use App\entities\User;
 
 require_once dirname(__DIR__, 4) . "\\vendor\\autoload.php";
 
-$library = new Library();
-$role = new Role;
+$crud = new Crud;
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +18,6 @@ $role = new Role;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="./style.css">
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <style>
@@ -131,7 +130,88 @@ $role = new Role;
                                         <span class=" pe-2">
                                             <i class="bi bi-plus"></i>
                                         </span>
-                                        <span>Create User</span>
+                                            <span data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                Create 
+                                                <?php 
+                                                    switch (basename($_SERVER["SCRIPT_FILENAME"], '.php')) {
+                                                        case 'users':
+                                                            echo "User";
+                                                            break;
+
+                                                        case 'roles':
+                                                            echo "Role";
+                                                            break;
+
+                                                        case 'reservations':
+                                                            echo "Reservation";
+                                                            break;
+
+                                                        case 'tags':
+                                                            echo "Tag";
+                                                            break;
+
+                                                        case 'categories':
+                                                            echo "Category";
+                                                            break;
+                                                        
+                                                        default:
+                                                            echo "User";
+                                                            break;
+                                                    }
+                                                ?>
+                                            </span>
+
+                                        <!-- ============================ MODAL ============================ -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel"> Add New <?php echo basename($_SERVER["SCRIPT_FILENAME"], 's.php') ?></h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-danger">
+                                                    <form method="post" action="./../../../core/config/Crud.php">
+                                                        <div class="mb-3 col-md-10 d-flex justify-content-between">
+                                                            <?php
+                                                                $arrayFields = $crud->getOne(basename($_SERVER["SCRIPT_FILENAME"], '.php'), 1);
+                                                                foreach ($arrayFields as $key => $value) {
+                                                                    if($key != "id"){ ?>
+                                                                    <div>
+                                                                        <label for="<?php echo $key ?>" class="col-form-label"><?php echo $key ?></label>
+                                                                        <?php if($key == "role") { 
+                                                                            $arrayRoles = $crud->getAll("roles"); ?> 
+                                                                            <select name="<?php echo $key ?>" class="form-select" aria-label="Default select example"> 
+                                                                                <?php foreach ($arrayRoles as $obj) { ?> 
+                                                                                    <option value="<?php echo $obj->id ?>"><?php echo $obj->name ?></option> 
+                                                                                <?php } ?> 
+                                                                            </select> 
+                                                                        <?php } else if($key == "category") { 
+                                                                            $arrayCategories = $crud->getAll("categories"); ?> 
+                                                                            <select name="<?php echo $key ?>" class="form-select" aria-label="Default select example"> 
+                                                                                <?php foreach ($arrayCategories as $obj) { ?> 
+                                                                                    <option value="<?php echo $obj->id ?>"><?php echo $obj->name ?></option> 
+                                                                                <?php } ?> 
+                                                                            </select> 
+                                                                        <?php } else if($key == "mail") { ?> 
+                                                                            <input type="email" class="form-control" id="<?php echo $key ?>" name="<?php echo $key ?>" required> 
+                                                                        <?php } else { ?> 
+                                                                            <input type="text" class="form-control" id="<?php echo $key ?>" name="<?php echo $key ?>" required> 
+                                                                        <?php } ?>
+                                                                    </div>
+                                                                <?php
+                                                                    }
+                                                                }
+                                                            ?>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" name="submitCreate" class="btn btn-primary">Add</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </a>
                                 </div>
                             </div>
@@ -156,7 +236,7 @@ $role = new Role;
                                     <div class="row">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Users</span>
-                                            <span class="h3 font-bold mb-0"><?php echo $library->getNumberOfUsers() ?></span>
+                                            <span class="h3 font-bold mb-0"><?php echo $crud->getNumber("users") ?></span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-primary text-white text-lg rounded-circle">
@@ -179,7 +259,7 @@ $role = new Role;
                                     <div class="row">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Roles</span>
-                                            <span class="h3 font-bold mb-0"><?php echo $role->getNumberOfRoles() ?></span>
+                                            <span class="h3 font-bold mb-0"><?php echo $crud->getNumber("roles") ?></span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-info text-white text-lg rounded-circle">
@@ -201,12 +281,12 @@ $role = new Role;
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Work load</span>
-                                            <span class="h3 font-bold mb-0">88%</span>
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Categories</span>
+                                            <span class="h3 font-bold mb-0"><?php echo $crud->getNumber("categories") ?></span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-warning text-white text-lg rounded-circle">
-                                                <i class="bi bi-minecart-loaded"></i>
+                                                <i class="bi bi-bookmark"></i>
                                             </div>
                                         </div>
                                     </div>

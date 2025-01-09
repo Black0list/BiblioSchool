@@ -23,6 +23,11 @@
                 }
             })
         }
+
+        function Delete(object){
+            console.log(object);
+        }
+
     </script>
 </body>
 

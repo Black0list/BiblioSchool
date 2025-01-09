@@ -1,4 +1,9 @@
-<?php include_once "./adminHeader.php"; ?>
+<?php
+
+use App\entities\Role;
+use App\entities\User;
+
+ include_once "./adminHeader.php"; ?>
                     <div class="card shadow border-0 mb-7">
                         <div class="card-header">
                             <h5 class="mb-0">Applications</h5>
@@ -16,9 +21,15 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $users = $library->getAllUsers();
-
-                                    foreach ($users as $user) {?>
+                                    $users = $crud->getAll("users");
+                                    foreach ($users as $record) {
+                                        $user = new User;
+                                        $role = new Role;
+                                        $role_id = $crud->getOne("roles", $record->role)->id;
+                                        $role_name = $crud->getOne("roles", $record->role)->name;
+                                        $role->initiateRole($role_id, $role_name);
+                                        $user->initiateUser($record->id, $record->name, $record->prenom, $record->mail, $record->password, $role);
+                                        ?>
                                         <tr>
                                             <td>
                                                 <img alt="..." src="https://bytewebster.com/img/logo.png" class="avatar avatar-xs rounded-circle me-2">
@@ -38,13 +49,23 @@
                                             </td>
                                             <td>
                                                 <span class="badge badge-pill bg-soft-success text-success me-2">
-                                                    <?php echo $user->getProperty("role"); ?>
+                                                    <?php 
+                                                        if($user->getProperty("role")->getProperty("name") != 1){
+                                                            echo $user->getProperty("role")->getProperty("name");
+                                                        } else {
+                                                            echo "no role";
+                                                        }
+                                                    ?>
                                                 </span>
                                             </td>
                                             <td class="text-end">
                                                 <!-- <a href="#" class="btn btn-sm btn-neutral">View</a> -->
-                                                <a href="#<?php echo $user->getProperty("id"); ?>" class="btn btn-sm btn-neutral bi-pen"></a>
-                                                <a href="#<?php echo $user->getProperty("id"); ?>" class="btn btn-sm btn-neutral bi-trash"></a>
+                                                <?php 
+                                                    if($user->getProperty("role")->getProperty("name") != "admin"){?>
+                                                        <a href="#<?php echo $user->getProperty("id"); ?>" class="btn btn-sm btn-neutral bi-pen"></a>
+                                                        <a href="../../../core/config/Crud.php?id=<?php echo $user->getProperty("id"); ?>&action=delete&table=users" class="btn btn-sm btn-neutral bi-trash"></a>
+                                                    <?php }
+                                                ?>
                                             </td>
                                         </tr>
                                     <?php
